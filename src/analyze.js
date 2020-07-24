@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 const ToneAnalyzerV3 = require('ibm-watson/tone-analyzer/v3');
 const { BasicAuthenticator } = require('ibm-watson/auth');
 
@@ -15,15 +13,9 @@ const toneAnalyzer = new ToneAnalyzerV3({
   url: baseUrl,
 });
 
-const analyze = (input) => {
-  toneAnalyzer.tone({
-    toneInput: input,
-    contentType: 'text/plain',
-  }).then((response) => {
-    console.log(JSON.stringify(response.result, null, 2));
-  }).catch((err) => {
-    console.log(err);
-  });
-};
+const analyze = async (input) => toneAnalyzer.tone({
+  toneInput: input,
+  contentType: 'text/plain',
+}).then((response) => JSON.stringify(response.result, null, 2));
 
 module.exports = analyze;
