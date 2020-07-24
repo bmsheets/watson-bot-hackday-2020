@@ -1,17 +1,17 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+/* eslint-disable no-console */
+
+const { createEventAdapter } = require('@slack/events-api');
 const handleAppMentionEvent = require('./handler');
 
-const app = express();
-const port = 3000;
+const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
+const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-
-app.get('/', (req, res) => res.send('Hello World!'));
-app.post('/slack/actions', (req, res) => {
-  handleAppMentionEvent(req.body)
-    .then(() => res.sendStatus(200))
-    .catch(() => res.sendStatus(500));
+slackEvents.on('app_mention', (event) => {
+  console.log(`Received an app mention event: user ${event.user} in channel ${event.channel}`);
+  handleAppMentionEvent(event);
 });
 
-app.listen(port, () => console.log(`WatsonBot listening at http://localhost:${port}`));
+(async () => {
+  const server = await slackEvents.start(port);
+  console.log(`Listening for events on port ${server.address().port}`);
+})();

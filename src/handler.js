@@ -3,17 +3,17 @@ const analyze = require('./analyze');
 
 const client = new WebClient(process.env.SLACK_TOKEN);
 
-const handleAppMentionEvent = async (body) => {
+const handleAppMentionEvent = async (event) => {
   try {
     const history = await client.conversations.history({
-      channel: body.event.channel,
+      channel: event.channel,
       limit: 2,
     });
     const previousMessage = history.messages[1].text;
     const analysis = await analyze(previousMessage);
 
     await client.chat.postMessage({
-      channel: body.event.channel,
+      channel: event.channel,
       text: analysis,
     });
   } catch (error) {
