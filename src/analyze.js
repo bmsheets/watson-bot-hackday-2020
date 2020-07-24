@@ -13,9 +13,19 @@ const toneAnalyzer = new ToneAnalyzerV3({
   url: baseUrl,
 });
 
+const formatAnalaysis = (analysis) => {
+  if (analysis.document_tone.tones.length > 0) {
+    const tones = analysis.document_tone.tones.map(
+      (tone) => `${tone.tone_name.padEnd(15)} ${(tone.score * 100).toFixed(4)}%`,
+    );
+    return ['Tone Analysis:', ...tones].join('\n');
+  }
+  return 'No tones detected.';
+};
+
 const analyze = async (input) => toneAnalyzer.tone({
   toneInput: input,
   contentType: 'text/plain',
-}).then((response) => JSON.stringify(response.result, null, 2));
+}).then((response) => formatAnalaysis(response.result));
 
 module.exports = analyze;
